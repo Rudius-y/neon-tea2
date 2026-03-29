@@ -1,0 +1,113 @@
+<!-- ADVANCED GitHub Pages Version (with LocalStorage + Fake Login) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Tea X</title>
+
+<style>
+body{margin:0;font-family:sans-serif;background:radial-gradient(circle,#001a1a,#000);color:white}
+header{text-align:center;padding:20px;font-size:2em;color:#00ffc3;text-shadow:0 0 20px #00ffc3}
+.section{text-align:center;padding:20px}
+.cards{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
+.card{background:#111;padding:15px;border-radius:12px;width:200px;box-shadow:0 0 15px #00ffc3}
+button{margin-top:10px;padding:6px 12px;border:1px solid #00ffc3;background:none;color:#00ffc3;cursor:pointer}
+button:hover{background:#00ffc3;color:black}
+input{padding:6px;margin:5px}
+</style>
+</head>
+
+<body>
+
+<header>☕ Neon Tea X</header>
+
+<div class="section" id="auth"></div>
+
+<div class="section">
+<h2>Tea Menu</h2>
+<div class="cards" id="teaList"></div>
+</div>
+
+<div class="section">
+<h2>Your Cart</h2>
+<div id="cart"></div>
+<button onclick="clearCart()">Clear Cart</button>
+</div>
+
+<script>
+let teas=["Green Tea","Black Tea","Milk Tea","Herbal Tea","Matcha","Karak Chai"];
+
+// AUTH SYSTEM (fake)
+function renderAuth(){
+ let user=localStorage.getItem("user");
+ let authDiv=document.getElementById("auth");
+
+ if(user){
+  authDiv.innerHTML=`<h3>Welcome ${user}</h3><button onclick="logout()">Logout</button>`;
+ }else{
+  authDiv.innerHTML=`
+  <input id="username" placeholder="Enter name">
+  <button onclick="login()">Login</button>`;
+ }
+}
+
+function login(){
+ let u=document.getElementById("username").value;
+ if(u){
+  localStorage.setItem("user",u);
+  renderAuth();
+ }
+}
+
+function logout(){
+ localStorage.removeItem("user");
+ renderAuth();
+}
+
+// CART SYSTEM
+function getCart(){
+ return JSON.parse(localStorage.getItem("cart")||"[]");
+}
+
+function saveCart(cart){
+ localStorage.setItem("cart",JSON.stringify(cart));
+}
+
+function addToCart(tea){
+ let cart=getCart();
+ cart.push(tea);
+ saveCart(cart);
+ renderCart();
+}
+
+function clearCart(){
+ localStorage.removeItem("cart");
+ renderCart();
+}
+
+function renderCart(){
+ let cart=getCart();
+ let c=document.getElementById("cart");
+ c.innerHTML=cart.map(i=>`<p>☕ ${i}</p>`).join("");
+}
+
+function renderTeas(){
+ let container=document.getElementById("teaList");
+ container.innerHTML="";
+ teas.forEach(t=>{
+  container.innerHTML+=`
+  <div class="card">
+   <h3>${t}</h3>
+   <button onclick="addToCart('${t}')">Add</button>
+  </div>`;
+ });
+}
+
+renderAuth();
+renderTeas();
+renderCart();
+</script>
+
+</body>
+</html>
